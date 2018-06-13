@@ -1,0 +1,18 @@
+---
+- name: Get Route Table facts
+  include_tasks: get_route_table_facts.yml
+  vars:
+    rt_region: "{{ route_table.aws_rt_region }}"
+    rt_tag: "{{ route_table.aws_rt_name }}"
+
+- name: Get Subnet facts
+  include_role:
+    name: aws_manage_subnets
+    tasks_from: get_subnet_facts
+  vars:
+    subnet_tag: "{{ subnet }}"
+
+- name: Associate Subnet with Route Table
+  command: "aws ec2 associate-route-table --route-table-id {{ rt_facts.route_tables[0].id }} --subnet-id {{ subnet_facts.subnets[0].id }}"
+  when: ( rt_facts | to_json ).find((subnet_facts.subnets[0].id)) == -1
+...

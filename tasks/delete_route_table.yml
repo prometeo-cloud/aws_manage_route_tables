@@ -1,0 +1,17 @@
+---
+- name: Get Route Table facts
+  include_role:
+    name: aws_manage_route_tables
+    tasks_from: "get_route_table_facts"
+  vars:
+    rt_tag: "{{ route_table.aws_rt_name }}"
+
+- name: Delete route table {{ route_table.aws_rt_name }}
+  ec2_vpc_route_table:
+    vpc_id: "{{ rt_facts.route_tables[0].vpc_id }}"
+    region: "{{ route_table.aws_rt_region }}"
+    route_table_id: "{{ rt_facts.route_tables[0].id }}"
+    lookup: id
+    state: absent
+  when: rt_facts.route_tables != []
+...

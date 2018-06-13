@@ -1,0 +1,17 @@
+---
+- name: Create Routing Tables
+  include_tasks: create_route_table.yml
+  with_items:
+    - "{{ aws_route_tables }}"
+  loop_control:
+    loop_var: route_table
+  when: (arg_action is not defined) or (arg_action != 'delete')
+
+- name: Delete Routing Tables
+  include_tasks: delete_route_table.yml
+  with_items:
+    - "{{ aws_route_tables }}"
+  loop_control:
+    loop_var: route_table
+  when: (arg_action is defined) and (arg_action == 'delete')
+...
